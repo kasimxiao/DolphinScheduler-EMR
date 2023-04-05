@@ -6,7 +6,7 @@
 
 在Amazon EMR中，可以使用AWS提供Setp Function，托管AirFlow，以及Apache Oozie或Azkaban进行作业的调用。但随着Apache Dolphinscheduler产品完善、社区的火爆、普及率的提升，越来越多的企业使用该产品作为任务调度的服务。Dolphinscheduler可以在Amazon EMR单独的集群中进行安装和部署，但是结合Amazon EMR本身的特点，基于使用最佳实践，我们不建议客户使用一个大而全，并且持久运行的集群提供整个大数据的相关服务，而是基于不同的维度对集群进行拆分，比如研发阶段（开发、测试、生产）、工作负载（即席查询、批处理）、时间敏感、作业时长、组织类型等，因此Dolphinscheduler作为统一的调度平台，则不需要安装在某一个固定EMR集群上，而是选择单独部署，将作业以 DAG（Directed Acyclic Graph，DAG）流式方式组装，统一的调度和管理。
 
-![Untitled](/image/dolphinscheduler-emr.png)
+![Untitled](/image/Untitled.png)
 
 此篇文章将介绍DolphinScheduler安装部署，以及使用python脚本的方式执行EMR的任务调度，包括集群创建、集群状态检查、作业创建、作业状态检查，所有任务完成后集群自动销毁。
 
@@ -19,8 +19,7 @@
 [Apache DolphinScheduler](https://dolphinscheduler.apache.org/zh-cn/docs/3.1.4/about/introduction) 是一个分布式易扩展的可视化DAG工作流任务调度开源系统。适用于企业级场景，提供了一个可视化操作任务、工作流和全生命周期数据处理过程的解决方案。
 
 架构图：
-
-![Untitled](/image/dolphinscheduler-architect.png)
+![Untitled](/image/Untitled%201.png)
 
 主要可实现：
 
@@ -32,7 +31,7 @@
 - 支持资源文件的在线上传/下载，管理等，支持在线文件创建、编辑
 - 支持任务日志在线查看及滚动、在线下载日志等
 - 实现集群 HA，通过 Zookeeper 实现 Master 集群和 Worker 集群去中心化
-- 支持对`Master/Worker` cpu load，memory，cpu 在线查看
+- 支持对Master/Worker cpu load，memory，cpu 在线查看
 - 支持工作流运行历史树形/甘特图展示、支持任务状态统计、流程状态统计
 - 支持补数
 - 支持多租户
@@ -40,6 +39,7 @@
 - 还有更多等待伙伴们探索
 
 ## 安装DolphinScheduler
+
 DolphinScheduler支持多种部署方式
 - 单机部署：Standalone 仅适用于 DolphinScheduler 的快速体验.
 - 伪集群部署：伪集群部署目的是在单台机器部署 DolphinScheduler 服务，该模式下master、worker、api server 都在同一台机器上
@@ -62,6 +62,7 @@ DolphinScheduler支持多种部署方式
 ![Untitled](/image/Untitled%205.png)
 
 3**、AWS创建IAM 策略**
+
 进入AWS IAM，创建调用EMR服务的策略
 替换EMR_DefaultRole和EMR_EC2_DefaultRole，为你EMR创建时选择的角色
 ```json
@@ -97,10 +98,13 @@ DolphinScheduler支持多种部署方式
 ```
 
 4**、创建IAM 角色**
+
 进入AWS IAM，创建角色，并赋予上一步所创建的策略
 
 5**、DolphinScheduler部署EC2绑定角色**
+
 将EC2绑定上一步创建的角色，使DolphinScheduler所部署EC2具有调用EMR权限
+
 ![Untitled](/image/Untitled%206.png)
 
 ![Untitled](/image/Untitled%207.png)
@@ -358,31 +362,38 @@ if __name__ == "__main__":
 **5、设置执行顺序**
 
 ![Untitled](/image/Untitled%208.png)
+在DolphinScheduler-项目管理-工作流-工作流定义中创建工作流，并创建python任务，将以上python脚本作为任务串联起来
 
 **6、保存并上线**
 
 ![Untitled](/image/Untitled%209.png)
+保存任务并点击上线
 
 **7、执行**
 
 ![Untitled](/image/Untitled%2010.png)
+可以点击立即执行，或指定计划任务按时执行
 
 **8、检查执行结果以及执行日志**
 
 ![Untitled](/image/Untitled%2011.png)
-
 ![Untitled](/image/Untitled%2012.png)
+在DolphinScheduler-项目管理-工作流-工作流实例中检查执行状态，以及执行日志
 
-由于创建集群时我们定义了:
+**9、终止集群**
+
+对于临时性执行作业或者每天定时执行的批处理作业，可以在作业结束后终止EMR集群以节省成本（EMR使用最佳实践）
+终止EMR集群可以使用EMR本身能力在空闲后自动终止，或者手动调用终止
+自动终止EMR集群：
 
 ```bash
+#在创建EMR集群的run_job_flow模板中加入：
 AutoTerminationPolicy={
     'IdleTimeout': 600
 }
 ```
-因此集群将在job执行完空闲十分钟后自动终止
-当然也可基于情况选择是否保留，以及单独调用方法终止集群
-
+此集群将在作业执行完空闲十分钟后自动终止
+手动终止EMR集群：
 ```python
 import boto3
 from datetime import date
@@ -404,6 +415,7 @@ if __name__ == "__main__":
 	client.set_termination_protection(JobFlowIds=[job_id],TerminationProtected=False)
     client.terminate_job_flows(JobFlowIds=[job_id])
 ```
+将此脚本加入到DolphinScheduler 作业流中，作业流在全部任务执行完成后执行该脚本以实现终止EMR集群
 
 ---
 
@@ -416,7 +428,6 @@ if __name__ == "__main__":
 ```bash
 python ~/dolphinscheduler/script/createcluster.py
 ```
-
 ![Untitled](/image/Untitled%2013.png)
 
 3、保存/上线/执行/检查同上
