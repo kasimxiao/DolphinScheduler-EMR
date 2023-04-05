@@ -6,7 +6,7 @@
 
 在Amazon EMR中，可以使用AWS提供Setp Function，托管AirFlow，以及Apache Oozie或Azkaban进行作业的调用。但随着Apache Dolphinscheduler产品完善、社区的火爆、普及率的提升，越来越多的企业使用该产品作为任务调度的服务。Dolphinscheduler可以在Amazon EMR单独的集群中进行安装和部署，但是结合Amazon EMR本身的特点，基于使用最佳实践，我们不建议客户使用一个大而全，并且持久运行的集群提供整个大数据的相关服务，而是基于不同的维度对集群进行拆分，比如研发阶段（开发、测试、生产）、工作负载（即席查询、批处理）、时间敏感、作业时长、组织类型等，因此Dolphinscheduler作为统一的调度平台，则不需要安装在某一个固定EMR集群上，而是选择单独部署，将作业以 DAG（Directed Acyclic Graph，DAG）流式方式组装，统一的调度和管理。
 
-![avatar](/image/dolphinscheduler-emr.png)
+![Untitled](/image/dolphinscheduler-emr.png)
 
 此篇文章将介绍DolphinScheduler安装部署，以及使用python脚本的方式执行EMR的任务调度，包括集群创建、集群状态检查、作业创建、作业状态检查，所有任务完成后集群自动销毁。
 
@@ -20,7 +20,7 @@
 
 架构图：
 
-![avatar](/image/dolphinscheduler-architect.png)
+![Untitled](/image/dolphinscheduler-architect.png)
 
 主要可实现：
 
@@ -47,7 +47,7 @@ DolphinScheduler支持多种部署方式
 
 如果你是新手，想要体验 DolphinScheduler的功能，推荐使用Standalone方式体检。如果你想体验更完整的功能，或者更大的任务量，推荐使用伪集群部署。如果你是在生产中使用，推荐使用集群部署或者kubernetes
 
-本次实验提供伪集群在aws上部署完整部署方式，请见[部署详情](https://github.com/kasimxiao/DolphinScheduler-EMR/DolphinScheduler-Deploy/)
+本次实验提供伪集群在aws上部署完整部署方式，请见[部署详情](https://github.com/kasimxiao/DolphinScheduler-EMR/tree/main/DolphinScheduler-Deploy)
 
 ---
 
@@ -76,8 +76,8 @@ DolphinScheduler支持多种部署方式
                 "elasticmapreduce:DescribeCluster",
                 "elasticmapreduce:AddJobFlowSteps",
                 "elasticmapreduce:DescribeStep",
-				"elasticmapreduce:TerminateJobFlows",
-				"elasticmapreduce:SetTerminationProtection"
+                "elasticmapreduce:TerminateJobFlows",
+                "elasticmapreduce:SetTerminationProtection"
             ],
             "Resource": "*"
         },
@@ -198,7 +198,7 @@ def run_job_flow():
         JobFlowRole='EMR_EC2_DefaultRole',
         ServiceRole='EMR_DefaultRole',
         EbsRootVolumeSize=100,
-		#集群空闲十分钟自动终止
+        #集群空闲十分钟自动终止
         AutoTerminationPolicy={
             'IdleTimeout': 600
         }
@@ -213,8 +213,8 @@ if __name__ == "__main__":
     #创建EMR集群
     clusterCreate = run_job_flow()
     job_id = clusterCreate['JobFlowId']
-		
-	#使用redis来保存信息，作为DolphinScheduler job step的参数传递，也可以使用DolphinScheduler所使用的mysql或者其他方式存储
+
+    #使用redis来保存信息，作为DolphinScheduler job step的参数传递，也可以使用DolphinScheduler所使用的mysql或者其他方式存储
     #替换{redis-endpoint}为你redis连接地址
     pool = redis.ConnectionPool(host='{redis-endpoint}', port=6379, decode_responses=True)
     r = redis.Redis(connection_pool=pool)
@@ -250,10 +250,10 @@ if __name__ == "__main__":
         if emr_state == 'WAITING':
             #EMR集群创建成功
             break
-		elif emr_state == 'FAILED':
+        elif emr_state == 'FAILED':
             #集群创建失败
-			#do something...
-			break
+            #do something...
+            break
         else:
             time.sleep(10)
 ```
@@ -346,11 +346,11 @@ if __name__ == "__main__":
         if emr_state == 'COMPLETED':
             #作业执行完成
             break
-		elif emr_state == 'FAILED'
+        elif emr_state == 'FAILED'
             #作业执行失败
-			#do something
-			#......
-			break
+            #do somethine
+            #......
+            break
         else:
             time.sleep(10)
 ```
@@ -377,7 +377,7 @@ if __name__ == "__main__":
 
 ```bash
 AutoTerminationPolicy={
-        'IdleTimeout': 600
+    'IdleTimeout': 600
 }
 ```
 因此集群将在job执行完空闲十分钟后自动终止
@@ -392,7 +392,7 @@ if __name__ == "__main__":
     today = date.today()
     d1 = today.strftime("%Y%m%d")
 
-	#获取集群id
+    #获取集群id
     #{region}替换为你需要创建EMR的Region
     client = boto3.client('emr',region_name='{region}')
 
