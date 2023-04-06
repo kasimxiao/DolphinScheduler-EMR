@@ -1,6 +1,6 @@
 # DolphinScheduler EMR任务调度
 
-# 前言
+## 前言
 
 随着企业规模的扩大，业务数据的激增，我们会使用Hadoop/Spark框架来处理大量数据的ETL/聚合分析作业，而这些作业将需要由统一的作业调度平台去定时调度。
 
@@ -10,11 +10,11 @@
 
 此篇文章将介绍DolphinScheduler安装部署，以及使用python脚本的方式执行EMR的任务调度，包括集群创建、集群状态检查、作业创建、作业状态检查，所有任务完成后集群自动销毁。
 
-# Amazon EMR
+## Amazon EMR
 
 [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html)是一个托管的集群平台，可简化在AWS上运行大数据框架（如 Apache Hadoop 和 Apache Spark）的过程，以处理和分析海量数据。用户可一键启动包含了众多 Hadoop 生态数据处理，分析相关服务的集群，而无需手动进行复杂的配置。
 
-# Apache Dolphinscheduler
+## Apache Dolphinscheduler
 
 [Apache DolphinScheduler](https://dolphinscheduler.apache.org/zh-cn/docs/3.1.4/about/introduction) 是一个分布式易扩展的可视化DAG工作流任务调度开源系统。适用于企业级场景，提供了一个可视化操作任务、工作流和全生命周期数据处理过程的解决方案。
 
@@ -36,7 +36,6 @@
 - 支持补数
 - 支持多租户
 - 支持国际化
-- 还有更多等待伙伴们探索
 
 ## 安装DolphinScheduler
 
@@ -49,8 +48,6 @@ DolphinScheduler支持多种部署方式
 
 本次实验提供伪集群在aws上部署完整部署方式，请见[部署详情](https://github.com/kasimxiao/DolphinScheduler-EMR/tree/main/DolphinScheduler-Deploy)
 
----
-
 ## 配置DolphinScheduler
 
 **1、建立租户**
@@ -61,7 +58,7 @@ DolphinScheduler支持多种部署方式
 
 ![Untitled](/image/Untitled%205.png)
 
-3**、AWS创建IAM 策略**
+**3、AWS创建IAM 策略**
 
 进入AWS IAM，创建调用EMR服务的策略
 替换EMR_DefaultRole和EMR_EC2_DefaultRole，为你EMR创建时选择的角色
@@ -97,11 +94,11 @@ DolphinScheduler支持多种部署方式
 }
 ```
 
-4**、创建IAM 角色**
+**4、创建IAM 角色**
 
 进入AWS IAM，创建角色，并赋予上一步所创建的策略
 
-5**、DolphinScheduler部署EC2绑定角色**
+**5、DolphinScheduler部署EC2绑定角色**
 
 将EC2绑定上一步创建的角色，使DolphinScheduler所部署EC2具有调用EMR权限
 
@@ -109,14 +106,12 @@ DolphinScheduler支持多种部署方式
 
 ![Untitled](/image/Untitled%207.png)
 
-6**、python 安装boto3，以及要用到其他的组件**
+**6、python 安装boto3，以及要用到其他的组件**
 
 ```bash
 sudu pip install boto3
 sudu pip install Redis
 ```
-
----
 
 ## 使用DolphinScheduler提交作业-以python方式执行
 
@@ -417,8 +412,6 @@ if __name__ == "__main__":
 ```
 将此脚本加入到DolphinScheduler 作业流中，作业流在全部任务执行完成后执行该脚本以实现终止EMR集群
 
----
-
 ## 使用DolphinScheduler提交作业-以shell方式提交
 
 1、将python代码保存到服务器
@@ -434,8 +427,6 @@ python ~/dolphinscheduler/script/createcluster.py
 
 执行结果相同
 
----
-
-# 总结
+## 总结
 
 通过独立部署Dolphinscheduler，利用Amazon EMR特性，客户可以根据自身特性/需求自定义分离负载操作，使用既有集群或创建瞬时集群，进行作业的调度和编排，并制定定时计划任务。
