@@ -366,14 +366,26 @@ if __name__ == "__main__":
 
 **7、执行**
 
-![Untitled](/image/Untitled%2010.png)
 可以点击立即执行，或指定计划任务按时执行
+![Untitled](/image/Untitled%2010.png)
+
+在EMR中查看执行情况
+EMR创建中
+![Untitled](/image/Untitled%2014.png)
+Setp执行中
+![Untitled](/image/Untitled%2015.png)
 
 **8、检查执行结果以及执行日志**
 
+在DolphinScheduler-项目管理-工作流-工作流实例中检查执行状态，以及执行日志
 ![Untitled](/image/Untitled%2011.png)
 ![Untitled](/image/Untitled%2012.png)
-在DolphinScheduler-项目管理-工作流-工作流实例中检查执行状态，以及执行日志
+
+在EMR中查看执行情况
+EMR创建完成
+![Untitled](/image/Untitled%2017.png)
+Setp执行完成
+![Untitled](/image/Untitled%2016.png)
 
 **9、终止集群**
 
