@@ -435,7 +435,7 @@ python ~/dolphinscheduler/script/createcluster.py
 ```
 ![Untitled](/image/Untitled%2013.png)
 
-3、保存/上线/执行/检查同上
+3、保存/上线/执行/检查
 
 执行结果相同
 
