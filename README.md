@@ -119,7 +119,7 @@ sudu pip install Redis
 
 **1、创建EMR集群创建任务**
 
-创建一个emr集群，3个master，3个core，指定子网与权限，以及集群空闲十分中自动终止
+创建一个EMR集群，3个MASTER，3个CORE，指定子网与权限，以及集群空闲十分中自动终止
 具体参数可见[链接](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/emr/client/run_job_flow.html)
 
 
@@ -136,7 +136,9 @@ def run_job_flow():
         Instances={
             'KeepJobFlowAliveWhenNoSteps': False,
             'TerminationProtected': False,
+            #替换{Sunbet-id}为你需要部署的子网id
             'Ec2SubnetId': '{Sunbet-id}',
+            #替换{Keypairs-name}为你ec2使用密钥对名称
             'Ec2KeyName': '{Keypairs-name}',
             'InstanceGroups': [
                 {
@@ -289,8 +291,8 @@ if __name__ == "__main__":
 
     #{region}替换为你需要创建EMR的Region
     client = boto3.client('emr',region_name='{region}')
-		
-	#获取emr集群id
+	
+    #获取emr集群id
     #替换{redis-endpoint}为你redis连接地址
     pool = redis.ConnectionPool(host='{redis-endpoint}', port=6379, decode_responses=True)
     r = redis.Redis(connection_pool=pool)
@@ -307,7 +309,7 @@ if __name__ == "__main__":
     #提交EMR Step作业
     response = client.add_job_flow_steps(JobFlowId=job_id, Steps=steps)
     step_id = response['StepIds'][0]
-	#将作业id保存，以便于做任务检查
+    #将作业id保存，以便于做任务检查
     r.set('SparkExample_'+d1, step_id)
 ```
 
@@ -338,7 +340,7 @@ if __name__ == "__main__":
     print(step_id)
 
     while True:
-		#查询作业执行结果
+        #查询作业执行结果
         result = describe_step(job_id, step_id)
         emr_state = result['Step']['Status']['State']
         print(emr_state)
@@ -389,8 +391,8 @@ Setp执行完成
 
 **9、终止集群**
 
-对于临时性执行作业或者每天定时执行的批处理作业，可以在作业结束后终止EMR集群以节省成本（EMR使用最佳实践）
-终止EMR集群可以使用EMR本身能力在空闲后自动终止，或者手动调用终止
+对于临时性执行作业或者每天定时执行的批处理作业，可以在作业结束后终止EMR集群以节省成本（EMR使用最佳实践）。
+终止EMR集群可以使用EMR本身功能在空闲后自动终止，或者手动调用终止。
 自动终止EMR集群：
 
 ```bash
@@ -418,8 +420,9 @@ if __name__ == "__main__":
     pool = redis.ConnectionPool(host='{redis-endpoint}', port=6379, decode_responses=True)
     r = redis.Redis(connection_pool=pool)
     job_id = r.get('cluster_id_' + d1)
-    
-	client.set_termination_protection(JobFlowIds=[job_id],TerminationProtected=False)
+    #关闭集群终止保护
+    client.set_termination_protection(JobFlowIds=[job_id],TerminationProtected=False)
+    #终止集群
     client.terminate_job_flows(JobFlowIds=[job_id])
 ```
 将此脚本加入到DolphinScheduler 作业流中，作业流在全部任务执行完成后执行该脚本以实现终止EMR集群
