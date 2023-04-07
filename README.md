@@ -8,8 +8,7 @@
 
 ![Untitled](/image/Untitled.png)
 
-此篇文章将介绍DolphinScheduler安装部署，以及使用python脚本的方式执行EMR的任务调度，包括集群创建、集群状态检查、作业创建、作业状态检查，所有任务完成后集群自动销毁。
-
+此篇文章将介绍DolphinScheduler安装部署，以及在DolphinScheduler中进行作业编排，以使用python脚本的方式执行EMR的任务调度，包括创建集群、集群状态检查、提交EMR Step作业、EMR Step作业状态检查，所有作业完成后终止集群。
 ## Amazon EMR
 
 [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html)是一个托管的集群平台，可简化在AWS上运行大数据框架（如 Apache Hadoop 和 Apache Spark）的过程，以处理和分析海量数据。用户可一键启动包含了众多 Hadoop 生态数据处理，分析相关服务的集群，而无需手动进行复杂的配置。
