@@ -73,7 +73,7 @@ bin/zkServer.sh status
 
 **5、部署数据库，这里选用的Aurora serverless**
 
-![Untitled](//image/Untitled%203.png)
+![Untitled](/image/Untitled%203.png)
 
 安全组设置允许DolphinScheduler EC2所在安全组3306访问
 
