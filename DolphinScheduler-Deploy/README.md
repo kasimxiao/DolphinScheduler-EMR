@@ -64,7 +64,7 @@ dataLogDir=/opt/zookeeper/logs
 ```bash
 cd ../
 #启动
-bin/zkServer.sh status
+bin/zkServer.sh start
 #查看状态
 bin/zkServer.sh status
 ```
