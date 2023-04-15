@@ -69,7 +69,7 @@ bin/zkServer.sh status
 bin/zkServer.sh status
 ```
 
-![Untitled](//image/Untitled%202.png)
+![Untitled](/image/Untitled%202.png)
 
 **5、部署数据库，这里选用的Aurora serverless**
 
